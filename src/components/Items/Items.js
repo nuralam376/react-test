@@ -58,7 +58,7 @@ function Items({ values, setFieldValue }) {
                   <div>
                     {categoryItems.map((category) =>
                       category.items.map((item) => (
-                        <Row key={item.value} className="ml-1 p-2">
+                        <Row key={item.id} className="ml-1 p-2">
                           <label className="mb-2">
                             <Field
                               name="applicable_items"
@@ -104,7 +104,7 @@ function Items({ values, setFieldValue }) {
         render={(arrayHelpers) => (
           <div>
             {nonCategoryItems.map((item) => (
-              <Row key={item.value} className="ml-1 p-2">
+              <Row key={item.id} className="ml-1 p-2">
                 <label className="mb-2">
                   <Field
                     name="applicable_items"
