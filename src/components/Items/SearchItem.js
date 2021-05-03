@@ -1,13 +1,41 @@
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
+import itemsData from "./itemsData";
 
 function SearchItem() {
   const initialValues = {
     searchText: "",
+    categoryItems: [],
+    checkedNonCategoryItems: [],
   };
 
   const onSubmit = () => {};
+
+  const [categoryItems, setCategoryItems] = useState([]);
+
+  const [nonCategoryItems, setNonCategoryItems] = useState(
+    itemsData.filter((item) => !item.category)
+  );
+
+  useEffect(() => {
+    let updatedCategoryItems = [];
+    itemsData.map((item) => {
+      if (item.category) {
+        let categoryItem = {};
+        categoryItem.category = item.category;
+        const findCategoryItems = itemsData.filter(
+          (categoryItem) =>
+            categoryItem.category &&
+            categoryItem.category.id === item.category.id
+        );
+        categoryItem.items = findCategoryItems;
+        updatedCategoryItems.push(categoryItem);
+      }
+    });
+    setCategoryItems(_.uniqBy(updatedCategoryItems, "category.id"));
+  }, []);
 
   return (
     <div>
@@ -16,60 +44,69 @@ function SearchItem() {
           <Row className="mb-4">
             <Field type="text" name="searchitem" placeholder="% Search" />
           </Row>
+
+          {categoryItems.length &&
+            categoryItems.map((item) => {
+              return (
+                <>
+                  <Row key={item.id} style={{ backgroundColor: "grey" }}>
+                    <Col>
+                      <Field type="checkbox" />
+                      <label htmlFor="" className="p-2">
+                        {item.category.name}
+                      </label>
+                    </Col>
+                  </Row>
+                  {item.items.map((itemDetail) => (
+                    <Row key={itemDetail.id} className="mt-3">
+                      <Col md="12">
+                        <Field
+                          type="checkbox"
+                          name="categoryItems"
+                          value={itemDetail.id}
+                        />
+                        <label htmlFor="" className="p-2">
+                          {itemDetail.name}
+                        </label>
+                      </Col>
+                    </Row>
+                  ))}
+                </>
+              );
+            })}
+
           <Row style={{ backgroundColor: "grey" }}>
             <Col>
-              <Field type="checkbox" />
               <label htmlFor="" className="p-2">
-                Bracelets
+                <Field
+                  type="checkbox"
+                  className="ml-2"
+                  name="checkedNonCategoryItems[]"
+                  value="all"
+                />
               </label>
             </Col>
           </Row>
-          <Row>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Jasinthe Bracelets
-              </label>
-            </Col>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Jasinthe Bracelets
-              </label>
-            </Col>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Inspire Bracelets
-              </label>
-            </Col>
-          </Row>
-          <Row className="mt-3" style={{ backgroundColor: "grey" }}>
-            <Col>
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2"></label>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Zero amount item with questions
-              </label>
-            </Col>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Normal Item with questions
-              </label>
-            </Col>
-            <Col md="12">
-              <Field type="checkbox" />
-              <label htmlFor="" className="p-2">
-                Normal Item
-              </label>
-            </Col>
-          </Row>
+          {nonCategoryItems.length &&
+            nonCategoryItems.map((item) => {
+              console.log("Item", item.id);
+              return (
+                <>
+                  <Row key={item.id} className="mt-3">
+                    <Col md="12">
+                      <label htmlFor="" className="p-2">
+                        <Field
+                          type="checkbox"
+                          name="checkedNonCategoryItems[]"
+                          value={item.id}
+                        />
+                        <span className="ml-2">{item.name}</span>
+                      </label>
+                    </Col>
+                  </Row>
+                </>
+              );
+            })}
         </Form>
       </Formik>
       <hr />
