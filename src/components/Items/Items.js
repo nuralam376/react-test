@@ -45,8 +45,8 @@ function Items({ values, setFieldValue, categoryItems, nonCategoryItems }) {
                   <div>
                     {categoryItems.map((category) =>
                       category.items.map((item) => (
-                        <Row key={item.id} className="ml-1 p-2">
-                          <label className="mb-2">
+                        <Row key={item.id} className="ml-1 p-1">
+                          <label className="mb-1">
                             <Field
                               name="applicable_items"
                               type="checkbox"
@@ -105,8 +105,8 @@ function Items({ values, setFieldValue, categoryItems, nonCategoryItems }) {
         render={(arrayHelpers) => (
           <div>
             {nonCategoryItems.map((item) => (
-              <Row key={item.id} className="ml-1 p-2">
-                <label className="mb-2">
+              <Row key={item.id} className="ml-1 p-1">
+                <label className="mb-1">
                   <Field
                     name="applicable_items"
                     type="checkbox"

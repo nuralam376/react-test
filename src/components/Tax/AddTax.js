@@ -124,7 +124,7 @@ function AddTax() {
                 </Col>
               </Row>
               <hr />
-              <Row>
+              <Row style={{ width: "200%" }}>
                 <Col md="12">
                   <Items
                     values={values}
