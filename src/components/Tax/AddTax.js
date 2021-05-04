@@ -35,10 +35,12 @@ function AddTax() {
     rate: "",
     applied_to: "",
     applicable_items: [],
+    category_type: [],
   };
 
   const onSubmit = async (data) => {
     data.rate /= 100;
+    delete data.category_type;
     console.log("Data", data);
   };
 
@@ -74,6 +76,12 @@ function AddTax() {
                   <label
                     className="ml-2"
                     onChange={(e) => {
+                      if (!values.category_type.includes("category")) {
+                        values.category_type.push("category");
+                      }
+                      if (!values.category_type.includes("non-category")) {
+                        values.category_type.push("non-category");
+                      }
                       nonCategoryItems.map((item) => {
                         if (!values.applicable_items.includes(item.id))
                           values.applicable_items.push(item.id);
@@ -107,6 +115,7 @@ function AddTax() {
                     className="ml-2"
                     onChange={(e) => {
                       values.applicable_items.splice(0);
+                      values.category_type.splice(0);
                     }}
                   >
                     <Field type="radio" name="applied_to" value="some" />
