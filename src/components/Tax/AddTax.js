@@ -1,9 +1,35 @@
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Items from "../Items/Items";
+import itemsData from "../Items/itemsData";
 
 function AddTax() {
+  const [categoryItems, setCategoryItems] = useState([]);
+
+  const [nonCategoryItems] = useState(
+    itemsData.filter((item) => !item.category)
+  );
+
+  useEffect(() => {
+    let updatedCategoryItems = [];
+    itemsData.map((item) => {
+      if (item.category) {
+        let categoryItem = {};
+        categoryItem.category = item.category;
+        const findCategoryItems = itemsData.filter(
+          (categoryItem) =>
+            categoryItem.category &&
+            categoryItem.category.id === item.category.id
+        );
+        categoryItem.items = findCategoryItems;
+        updatedCategoryItems.push(categoryItem);
+      }
+      return item;
+    });
+    setCategoryItems(_.uniqBy(updatedCategoryItems, "category.id"));
+  }, []);
   const initialValues = {
     name: "",
     rate: "",
@@ -12,6 +38,7 @@ function AddTax() {
   };
 
   const onSubmit = async (data) => {
+    data.rate /= 100;
     console.log("Data", data);
   };
 
@@ -44,20 +71,58 @@ function AddTax() {
               </Row>
               <Row>
                 <Col md="12">
-                  <Field type="radio" name="applied_to" value="all" />
-                  <label className="ml-2">
-                    Apply to all items in collection
+                  <label
+                    className="ml-2"
+                    onChange={(e) => {
+                      nonCategoryItems.map((item) => {
+                        if (!values.applicable_items.includes(item.id))
+                          values.applicable_items.push(item.id);
+                        else {
+                          const idx = values.applicable_items.indexOf(item.id);
+                          values.applicable_items.splice(idx, 1);
+                        }
+                      });
+                      categoryItems.map((category) => {
+                        category.items.map((item) => {
+                          if (!values.applicable_items.includes(item.id))
+                            values.applicable_items.push(item.id);
+                          else {
+                            const idx = values.applicable_items.indexOf(
+                              item.id
+                            );
+                            values.applicable_items.splice(idx, 1);
+                          }
+                        });
+                      });
+                    }}
+                  >
+                    <Field type="radio" name="applied_to" value="all" />
+                    <span className="ml-2">
+                      Apply to all items in collection
+                    </span>
                   </label>
                 </Col>
                 <Col md="12">
-                  <Field type="radio" name="applied_to" value="some" />
-                  <label className="ml-2">Apply to specific items</label>
+                  <label
+                    className="ml-2"
+                    onChange={(e) => {
+                      values.applicable_items.splice(0);
+                    }}
+                  >
+                    <Field type="radio" name="applied_to" value="some" />
+                    <span className="ml-2">Apply to specific items</span>
+                  </label>
                 </Col>
               </Row>
               <hr />
               <Row>
                 <Col md="12">
-                  <Items values={values} setFieldValue={setFieldValue} />
+                  <Items
+                    values={values}
+                    setFieldValue={setFieldValue}
+                    categoryItems={categoryItems}
+                    nonCategoryItems={nonCategoryItems}
+                  />
                 </Col>
               </Row>
             </Form>

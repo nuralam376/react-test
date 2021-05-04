@@ -2,7 +2,11 @@ import "./App.css";
 import AddTax from "./components/Tax/AddTax";
 
 function App() {
-  return <AddTax />;
+  return (
+    <div className="container">
+      <AddTax />
+    </div>
+  );
 }
 
 export default App;

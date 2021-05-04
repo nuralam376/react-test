@@ -1,35 +1,8 @@
 import { Field, FieldArray } from "formik";
-import _ from "lodash";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
-import itemsData from "./itemsData";
 
-function Items({ values, setFieldValue }) {
-  const [categoryItems, setCategoryItems] = useState([]);
-
-  const [nonCategoryItems] = useState(
-    itemsData.filter((item) => !item.category)
-  );
-
-  useEffect(() => {
-    let updatedCategoryItems = [];
-    itemsData.map((item) => {
-      if (item.category) {
-        let categoryItem = {};
-        categoryItem.category = item.category;
-        const findCategoryItems = itemsData.filter(
-          (categoryItem) =>
-            categoryItem.category &&
-            categoryItem.category.id === item.category.id
-        );
-        categoryItem.items = findCategoryItems;
-        updatedCategoryItems.push(categoryItem);
-      }
-      return item;
-    });
-    setCategoryItems(_.uniqBy(updatedCategoryItems, "category.id"));
-  }, []);
-
+function Items({ values, setFieldValue, categoryItems, nonCategoryItems }) {
   return (
     <div>
       <Row className="mb-4">
@@ -47,6 +20,20 @@ function Items({ values, setFieldValue }) {
                       type="checkbox"
                       name="category_type"
                       value="category"
+                      onClick={() => {
+                        categoryItems.map((category) => {
+                          category.items.map((item) => {
+                            if (!values.applicable_items.includes(item.id))
+                              values.applicable_items.push(item.id);
+                            else {
+                              const idx = values.applicable_items.indexOf(
+                                item.id
+                              );
+                              values.applicable_items.splice(idx, 1);
+                            }
+                          });
+                        });
+                      }}
                     />
                     <span className="ml-2">{item.category.name}</span>
                   </label>
@@ -95,7 +82,21 @@ function Items({ values, setFieldValue }) {
       <Row style={{ backgroundColor: "grey" }}>
         <Col>
           <label htmlFor="" className="p-2 ml-1">
-            <Field type="checkbox" name="category_type" value="non-category" />
+            <Field
+              type="checkbox"
+              name="category_type"
+              value="non-category"
+              onClick={() => {
+                nonCategoryItems.map((item) => {
+                  if (!values.applicable_items.includes(item.id))
+                    values.applicable_items.push(item.id);
+                  else {
+                    const idx = values.applicable_items.indexOf(item.id);
+                    values.applicable_items.splice(idx, 1);
+                  }
+                });
+              }}
+            />
           </label>
         </Col>
       </Row>
